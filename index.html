@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscador de Cartas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="topbar-mark">
+      <span class="topbar-mark-glyph">&#9670;</span>
+      <div>
+        <h1>Explorador de Cartas</h1>
+        <p class="topbar-sub">Dossier de unidades &mdash; búsqueda y filtrado táctico</p>
+      </div>
+    </div>
+    <button class="mobile-filter-toggle" id="mobileFilterToggle" type="button" aria-expanded="false" aria-controls="filterSidebar">
+      Filtros
+    </button>
+  </header>
+
+  <div class="layout">
+
+    <aside class="sidebar" id="filterSidebar">
+      <div class="sidebar-inner">
+
+        <section class="filter-group">
+          <p class="filter-eyebrow">01 &mdash; Identidad</p>
+          <label class="filter-field">
+            <span>Nombre de carta</span>
+            <input id="nameInput" type="text" placeholder="Ej. Aria, Sombraluz...">
+          </label>
+          <label class="filter-field">
+            <span>Rol</span>
+            <input id="roleInput" type="text" placeholder="Ej. Sanador, Tanque...">
+          </label>
+        </section>
+
+        <section class="filter-group">
+          <p class="filter-eyebrow">02 &mdash; Habilidad</p>
+          <label class="filter-field">
+            <span>Nombre de habilidad</span>
+            <input id="abilityInput" type="text" placeholder="Ej. Golpe final...">
+          </label>
+          <label class="filter-field">
+            <span>Descripción</span>
+            <input id="descInput" type="text" placeholder="Palabra clave en el efecto...">
+          </label>
+        </section>
+
+        <section class="filter-group">
+          <p class="filter-eyebrow">03 &mdash; Estadísticas</p>
+          <div class="filter-row">
+            <label class="filter-field">
+              <span>Rating</span>
+              <input id="ratingInput" type="text" placeholder="Ej. 9">
+            </label>
+            <label class="filter-field">
+              <span>Revive</span>
+              <input id="reviveInput" type="text" placeholder="Sí / No">
+            </label>
+          </div>
+        </section>
+
+        <section class="filter-group">
+          <p class="filter-eyebrow">04 &mdash; Efectos de combate</p>
+          <label class="filter-field">
+            <span>Status effects</span>
+            <input id="statusInput" type="text" placeholder="Ej. Aturdido...">
+          </label>
+          <label class="filter-field">
+            <span>Debuffs</span>
+            <input id="debuffsInput" type="text" placeholder="Ej. Defensa reducida...">
+          </label>
+          <label class="filter-field">
+            <span>Counters</span>
+            <input id="countersInput" type="text" placeholder="Ej. Contraataque...">
+          </label>
+          <label class="filter-field">
+            <span>Buffs</span>
+            <input id="buffsInput" type="text" placeholder="Ej. Ataque aumentado...">
+          </label>
+        </section>
+
+        <div class="filter-actions">
+          <button class="search-btn" onclick="searchCards()">
+            Buscar cartas
+          </button>
+          <button class="clear-btn" id="clearFiltersBtn" type="button">
+            Limpiar filtros
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div id="results"></div>
+    </main>
+
+  </div>
+
+  <script>
+    const toggle = document.getElementById('mobileFilterToggle');
+    const sidebar = document.getElementById('filterSidebar');
+    toggle.addEventListener('click', () => {
+      const isOpen = sidebar.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+  </script>
+  <script src="logic.js"></script>
+  <!-- Recuerda pegar tu ANON_KEY real en logic.js, la línea 2 -->
+</body>
+</html>
