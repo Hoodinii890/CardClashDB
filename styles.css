@@ -79,6 +79,20 @@
     border-radius: 4px;
     cursor: pointer;
   }
+
+  .prompt {
+    display: inline-block;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px solid var(--brass-dim);
+    color: var(--brass);
+    font-family: var(--font-display);
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+  }
   
   /* ---------- Layout ---------- */
   

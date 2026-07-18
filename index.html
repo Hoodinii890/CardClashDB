@@ -18,9 +18,70 @@
         <p class="topbar-sub">Dossier de unidades &mdash; búsqueda y filtrado táctico</p>
       </div>
     </div>
-    <button class="mobile-filter-toggle" id="mobileFilterToggle" type="button" aria-expanded="false" aria-controls="filterSidebar">
-      Filtros
-    </button>
+    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+      <button class="mobile-filter-toggle" id="mobileFilterToggle" type="button" aria-expanded="false" aria-controls="filterSidebar">
+        Filtros
+      </button>
+      <button class="prompt" id="copyPromptBtn" type="button">
+        Copiar Prompt
+      </button>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const copyBtn = document.getElementById('copyPromptBtn');
+        copyBtn.addEventListener('click', function() {
+          // Línea precisa del prompt.txt 1-42
+          const prompt = `You are an AI that receives a fantasy card image. 
+Your task is to:
+1. Perform OCR to extract all visible text from the card image.
+2. Identify and classify the following fields:
+   - card_name: The main title of the card (top, bold font).
+   - ability_name: The highlighted ability name (usually below the card name).
+   - ability_description: The long text describing the ability.
+
+3. Analyze the ability name and description to infer gameplay attributes:
+   - role: Card’s role (DPS, healer, support, tank, etc.).
+   - role_rating: A rating (e.g., 7/10) with a short explanation.
+   - caps: List the caps/limits mentioned in the description or shown in gray containers.
+   - revive: If the card revives, describe how, conditions, and benefits. If not, set to null.
+   - status_effects: States applied (bleed, poison, stun, etc.), how they are applied, scaling potential. If none, set to null.
+   - debuffs: Enemy debuffs (cancel, reduce, weaken, etc.). If none, set to null.
+   - counters: Counter mechanics (block, dodge, reflect, etc.). If none, set to null.
+   - buffs: Buffs to allies or self (stats, family buffs, etc.). If none, set to null.
+   - fusion: Fusion mode, conditions, and effects. If none, set to null.
+   - summons: Summons units, describe what, how, and conditions. If none, set to null.
+
+4. Output everything in valid JSON format. 
+All fields must exist. If a field is not applicable, set it to null.
+
+Example output:
+
+{
+  "card_name": "Awakened Golden Vampire",
+  "ability_name": "ZA WARUDO!!!",
+  "ability_description": "When attacked: 35% chance to cancel the attack and time stop for 1 turn...",
+  "role": "DPS",
+  "role_rating": "8/10 - Strong burst damage with time stop and bleed scaling",
+  "caps": ["One Per Party", "Revive Limit", "Effect Cap", "Time Stop"],
+  "revive": "On first death, revives at 65% HP in the body of the first enemy killed, gaining 50% of their DMG",
+  "status_effects": "Applies 2-turn bleed equal to 50% of DMG dealt during time stop",
+  "debuffs": "Cancels enemy attack and stops time, preventing actions",
+  "counters": "Chance to cancel incoming attack (35%, increases by 10% on failure)",
+  "buffs": null,
+  "fusion": null,
+  "summons": null
+}
+
+Keep this prompt in mind for the rest of the conversation, and apply its rules when responding to all the images I send you.`;
+          navigator.clipboard.writeText(prompt).then(function() {
+            copyBtn.textContent = "¡Prompt copiado!";
+            setTimeout(() => {
+              copyBtn.textContent = "Copiar Prompt";
+            }, 2000);
+          });
+        });
+      });
+    </script>
   </header>
 
   <div class="layout">
