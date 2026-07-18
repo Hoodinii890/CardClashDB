@@ -88,7 +88,64 @@ Keep this prompt in mind for the rest of the conversation, and apply its rules w
 
     <aside class="sidebar" id="filterSidebar">
       <div class="sidebar-inner">
+        <section class="filter-group">
+          <p class="filter-eyebrow">01 &mdash; Tipo de carta</p>
+          <div class="filter-field">
+            <button type="button" id="supportedCardToggle" class="prompt">Attack</button>
+          </div>
+        </section>  
+        <script>
+          document.addEventListener("DOMContentLoaded", function() {
+            const toggleBtn = document.getElementById("supportedCardToggle");
+            const descInput = document.getElementById("descInput");
+            let isActive = false;
 
+            function ensureSupportedCardPrefix(descVal) {
+              // Removes existing prefix (case-insensitive, followed by space)
+              let newVal = descVal.replace(/^supported card\s+/i, "");
+              return "supported card " + newVal;
+            }
+
+            function removeSupportedCardPrefix(descVal) {
+              // Removes only the "supported card " at start, case-insensitive, if present
+              return descVal.replace(/^supported card\s+/i, "");
+            }
+
+            toggleBtn.addEventListener("click", function() {
+              isActive = !isActive;
+
+              if (isActive) {
+                // Prepend "supported card " only if not already present
+                descInput.value = ensureSupportedCardPrefix(descInput.value);
+                toggleBtn.classList.add("prompt-active");
+                toggleBtn.textContent = "Support";
+              } else {
+                // Remove only the "supported card " part if present, leave rest as is
+                descInput.value = removeSupportedCardPrefix(descInput.value);
+                toggleBtn.classList.remove("prompt-active");
+                toggleBtn.textContent = "Attack";
+              }
+
+              // Trigger Enter key to activate the query
+              const event = new KeyboardEvent('keydown', {
+                key: 'Enter',
+                code: 'Enter',
+                which: 13,
+                keyCode: 13,
+                bubbles: true
+              });
+              descInput.dispatchEvent(event);
+            });
+          });
+        </script>
+        <style>
+          /* Optional: visually show active toggle */
+          .prompt-active {
+            background: var(--brass);
+            color: var(--panel);
+            border-color: var(--brass);
+          }
+        </style>
         <section class="filter-group">
           <p class="filter-eyebrow">01 &mdash; Identidad</p>
           <label class="filter-field">
