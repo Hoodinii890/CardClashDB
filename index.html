@@ -91,7 +91,7 @@ Keep this prompt in mind for the rest of the conversation, and apply its rules w
         <section class="filter-group">
           <p class="filter-eyebrow">01 &mdash; Tipo de carta</p>
           <div class="filter-field">
-            <button type="button" id="supportedCardToggle" class="prompt">Attack</button>
+            <button type="button" id="supportedCardToggle" class="prompt">Cartas</button>
           </div>
         </section>  
         <script>
@@ -123,7 +123,7 @@ Keep this prompt in mind for the rest of the conversation, and apply its rules w
                 // Remove only the "supported card " part if present, leave rest as is
                 descInput.value = removeSupportedCardPrefix(descInput.value);
                 toggleBtn.classList.remove("prompt-active");
-                toggleBtn.textContent = "Attack";
+                toggleBtn.textContent = "Cartas";
               }
 
               // Trigger Enter key to activate the query

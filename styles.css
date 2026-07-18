@@ -349,7 +349,25 @@
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-    overflow: hidden;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #c19a49 transparent;
+  }
+  .ability-desc::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+    background: transparent;
+  }
+  .ability-desc::-webkit-scrollbar-thumb {
+    background: #c19a49;
+    border-radius: 8px;
+    border: 2px solid #c19a49;
+  }
+  .ability-desc::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .ability-desc::-webkit-scrollbar-corner {
+    background: transparent;
   }
   
   .card-details {
