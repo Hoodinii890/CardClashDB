@@ -43,17 +43,22 @@ async function searchCards() {
   for (const [inputId, column] of Object.entries(FIELD_MAP)) {
     const value = document.getElementById(inputId).value.trim();
     if (value) {
-      if(column === "revive"){
-        if (value === "Si") {
-          url += `&${column}=not.is.null`;
-        } else if (value === "No") {
-          url += `&${column}=is.null`;
-        } else {
-          url += `&${column}=ilike.**`;
-        }
-   
-      }else{
-        url += `&${column}=ilike.*${encodeURIComponent(value)}*`;
+      switch (column) {
+        case "revive":
+          if (value === "Si") {
+            url += `&${column}=not.is.null`;
+          } else if (value === "No") {
+            url += `&${column}=is.null`;
+          } else {
+            url += `&${column}=ilike.**`;
+          }
+          break;
+        case "role_rating":
+          url += `&${column}=ilike.${encodeURIComponent(value)}*`;
+          break;
+        default:
+          url += `&${column}=ilike.*${encodeURIComponent(value)}*`;
+          break;
       }
     }
   }
