@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buscador de Cartas</title>
+  <title>Card Searcher</title>
+  <link rel="icon" href="https://tr.rbxcdn.com/180DAY-ee9112b89b446581b34350573a3d6760/256/256/Image/Webp/noFilter" type="image/webp">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
@@ -14,23 +15,23 @@
     <div class="topbar-mark">
       <span class="topbar-mark-glyph">&#9670;</span>
       <div>
-        <h1>Explorador de Cartas</h1>
-        <p class="topbar-sub">Dossier de unidades &mdash; búsqueda y filtrado táctico</p>
+        <h1>Card Explorer</h1>
+        <p class="topbar-sub">Unit dossier &mdash; tactical search and filtering</p>
       </div>
     </div>
     <div style="display: flex; flex-direction: column; gap: 0.75rem;">
       <button class="mobile-filter-toggle" id="mobileFilterToggle" type="button" aria-expanded="false" aria-controls="filterSidebar">
-        Filtros
+        Filters
       </button>
       <button class="prompt" id="copyPromptBtn" type="button">
-        Copiar Prompt
+        Copy Prompt
       </button>
     </div>
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         const copyBtn = document.getElementById('copyPromptBtn');
         copyBtn.addEventListener('click', function() {
-          // Línea precisa del prompt.txt 1-42
+          // Exact lines of prompt.txt 1-42
           const prompt = `You are an AI that receives a fantasy card image. 
 Your task is to:
 1. Perform OCR to extract all visible text from the card image.
@@ -74,9 +75,9 @@ Example output:
 
 Keep this prompt in mind for the rest of the conversation, and apply its rules when responding to all the images I send you.`;
           navigator.clipboard.writeText(prompt).then(function() {
-            copyBtn.textContent = "¡Prompt copiado!";
+            copyBtn.textContent = "Prompt copied!";
             setTimeout(() => {
-              copyBtn.textContent = "Copiar Prompt";
+              copyBtn.textContent = "Copy Prompt";
             }, 2000);
           });
         });
@@ -89,9 +90,9 @@ Keep this prompt in mind for the rest of the conversation, and apply its rules w
     <aside class="sidebar" id="filterSidebar">
       <div class="sidebar-inner">
         <section class="filter-group">
-          <p class="filter-eyebrow">01 &mdash; Tipo de carta</p>
+          <p class="filter-eyebrow">01 &mdash; Card type</p>
           <div class="filter-field">
-            <button type="button" id="supportedCardToggle" class="prompt">Cartas</button>
+            <button type="button" id="supportedCardToggle" class="prompt">Cards</button>
           </div>
         </section>  
         <script>
@@ -123,7 +124,7 @@ Keep this prompt in mind for the rest of the conversation, and apply its rules w
                 // Remove only the "supported card " part if present, leave rest as is
                 descInput.value = removeSupportedCardPrefix(descInput.value);
                 toggleBtn.classList.remove("prompt-active");
-                toggleBtn.textContent = "Cartas";
+                toggleBtn.textContent = "Cards";
               }
 
               // Trigger Enter key to activate the query
@@ -147,31 +148,31 @@ Keep this prompt in mind for the rest of the conversation, and apply its rules w
           }
         </style>
         <section class="filter-group">
-          <p class="filter-eyebrow">01 &mdash; Identidad</p>
+          <p class="filter-eyebrow">01 &mdash; Identity</p>
           <label class="filter-field">
-            <span>Nombre de carta</span>
-            <input id="nameInput" type="text" placeholder="Ej. Aria, Sombraluz...">
+            <span>Card name</span>
+            <input id="nameInput" type="text" placeholder="E.g. Aria, Shadowlight...">
           </label>
           <label class="filter-field">
-            <span>Rol</span>
-            <input id="roleInput" type="text" placeholder="Ej. Sanador, Tanque...">
-          </label>
-        </section>
-
-        <section class="filter-group">
-          <p class="filter-eyebrow">02 &mdash; Habilidad</p>
-          <label class="filter-field">
-            <span>Nombre de habilidad</span>
-            <input id="abilityInput" type="text" placeholder="Ej. Golpe final...">
-          </label>
-          <label class="filter-field">
-            <span>Descripción</span>
-            <input id="descInput" type="text" placeholder="Palabra clave en el efecto...">
+            <span>Role</span>
+            <input id="roleInput" type="text" placeholder="E.g. Healer, Tank...">
           </label>
         </section>
 
         <section class="filter-group">
-          <p class="filter-eyebrow">03 &mdash; Estadísticas</p>
+          <p class="filter-eyebrow">02 &mdash; Ability</p>
+          <label class="filter-field">
+            <span>Ability name</span>
+            <input id="abilityInput" type="text" placeholder="E.g. Final Blow...">
+          </label>
+          <label class="filter-field">
+            <span>Description</span>
+            <input id="descInput" type="text" placeholder="Keyword in the effect...">
+          </label>
+        </section>
+
+        <section class="filter-group">
+          <p class="filter-eyebrow">03 &mdash; Stats</p>
           <div class="filter-row">
             <label class="filter-field">
               <span>Rating</span>
@@ -194,7 +195,7 @@ Keep this prompt in mind for the rest of the conversation, and apply its rules w
               <span>Revive</span>
               <select id="reviveInput" onchange="searchCards()">
                 <option value="">--</option>
-                <option value="Si">Sí</option>
+                <option value="Si">Yes</option>
                 <option value="No">No</option>
               </select>
     
@@ -203,31 +204,31 @@ Keep this prompt in mind for the rest of the conversation, and apply its rules w
         </section>
 
         <section class="filter-group">
-          <p class="filter-eyebrow">04 &mdash; Efectos de combate</p>
+          <p class="filter-eyebrow">04 &mdash; Combat effects</p>
           <label class="filter-field">
             <span>Status effects</span>
-            <input id="statusInput" type="text" placeholder="Ej. Aturdido...">
+            <input id="statusInput" type="text" placeholder="E.g. Stunned...">
           </label>
           <label class="filter-field">
             <span>Debuffs</span>
-            <input id="debuffsInput" type="text" placeholder="Ej. Defensa reducida...">
+            <input id="debuffsInput" type="text" placeholder="E.g. Reduced defense...">
           </label>
           <label class="filter-field">
             <span>Counters</span>
-            <input id="countersInput" type="text" placeholder="Ej. Contraataque...">
+            <input id="countersInput" type="text" placeholder="E.g. Counterattack...">
           </label>
           <label class="filter-field">
             <span>Buffs</span>
-            <input id="buffsInput" type="text" placeholder="Ej. Ataque aumentado...">
+            <input id="buffsInput" type="text" placeholder="E.g. Increased attack...">
           </label>
         </section>
 
         <div class="filter-actions">
           <button class="search-btn" onclick="searchCards()">
-            Buscar cartas
+            Search cards
           </button>
           <button class="clear-btn" id="clearFiltersBtn" type="button">
-            Limpiar filtros
+            Clear filters
           </button>
         </div>
       </div>
@@ -248,6 +249,6 @@ Keep this prompt in mind for the rest of the conversation, and apply its rules w
     });
   </script>
   <script src="logic.js"></script>
-  <!-- Recuerda pegar tu ANON_KEY real en logic.js, la línea 2 -->
+  <!-- Remember to paste your real ANON_KEY in logic.js, line 2 -->
 </body>
 </html>
