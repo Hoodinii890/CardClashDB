@@ -178,7 +178,8 @@
     color: var(--text-muted);
   }
   
-  .filter-field input {
+  .filter-field input,
+  .filter-field select {
     width: 100%;
     padding: 9px 10px;
     background: var(--ink);
@@ -189,16 +190,27 @@
     font-size: 13px;
     transition: border-color 0.15s ease;
   }
-  
+
   .filter-field input::placeholder {
     color: #4c5566;
   }
-  
-  .filter-field input:focus {
+
+  .filter-field input:focus,
+  .filter-field select:focus {
     outline: none;
     border-color: var(--brass);
   }
-  
+
+  .filter-field select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg width='12' height='6' viewBox='0 0 12 6' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M1 1L6 5L11 1' stroke='%236d5323' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 14px 8px;
+    cursor: pointer;
+  }
   .filter-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
