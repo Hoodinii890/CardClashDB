@@ -366,6 +366,7 @@
     scrollbar-width: thin;
     scrollbar-color: #c19a49 transparent;
   }
+  
   .ability-desc::-webkit-scrollbar {
     height: 8px;
     width: 8px;

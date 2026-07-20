@@ -59,7 +59,9 @@ Your task:
    - stats: DMG and HP values shown on the card. Convert shorthand like
      "4.82K" to 4820, "20.18K" to 20180. Keep plain numbers as-is.
 3. Analyze the ability and stats to infer:
-   - role: DPS, Healer, Support, Tank, etc.
+   - role: must be chosen from the following closed list:
+     ["DPS","Burst DPS","Sustained DPS","Tank","Bruiser","Healer","Self-Healer","Support","Self-Support","Buffer","Debuffer","Crowd Control","Summoner","Reviver","Hybrid","Disruptor","Defender","Reflector","Dodger","Nuker","AoE","Single Target Specialist (just put STS)","Control Mage","Utility"]
+     Multiple roles allowed if applicable.
    - role_rating: strict "X/10 - reason". MUST weigh both ability
      usefulness AND how stats compare to current max (DMG {MAX_DMG},
      HP {MAX_HP}). If stats are far below max, rating must be **0/10**
@@ -73,17 +75,15 @@ Your task:
      cards, so their value must be judged strictly by how much they
      enhance those allies. If their effect is negligible compared to
      the meta, they must also be rated 0/10.
-   - caps: array of limit badges shown near the bottom (e.g. "One Per
-     Party", "Effect Cap", "Revive Limit", "Stack Limit"). None if none.
+   - caps: here, list the card's "cap" badges that appear near the bottom edge of the card, inside gray rounded containers; but do NOT format them as an array like ["",""], instead write them as a single string, lowercase, separated by commas—for example: "one per party, effect cap, revive limit". Use None if there are none.
    - revive: how/when it revives and the benefit. None if none.
-   - status_effects: effects applied (bleed, poison, stun...), how,
-     scaling potential. None if none.
+   - status_effects: only list the keywords for each effect type the card applies to the enemy, for example: "burn", "freeze", "sleep", "bleed", "poison", "stun", etc. Do not explain reasons, conditions, or how they are applied—just mention the effect keywords. If the card applies more than one, write a list of the keywords. Use None if there are no effects.
    - debuffs: enemy debuffs (cancel, reduce, weaken). None if none.
    - counters: counter mechanics (block, dodge, reflect). None if none.
    - buffs: buffs to self/allies. None if none.
    - fusion: fusion mode/conditions/effects. None if none.
    - summons: summoned units, how, conditions. None if none.
-   - support: This will only be true if the card has neither DMG nor HP; if it has DMG and HP, regardless of any other information, this must be null. If the card has DMG or HP, this property can NEVER be true, even if the role is support; in that case, this property must be null.
+   - support: This will only be true if the card has neither DMG nor HP; if it has DMG and HP, regardless of any other information, this must be null.
 
 Strict rating scale:
 - 0/10 → useless in meta (stats too low or ability irrelevant).
@@ -92,10 +92,28 @@ Strict rating scale:
 - 7–8/10 → strong ability and competitive stats or support effect.
 - 9–10/10 → meta-defining card, top tier.
 
-Return ONLY a valid JSON object with exactly these keys:
-{ALL_FIELDS}
-No markdown, no text outside the JSON. Use None (not a string) when a
-field does not apply. stats must be an object: {{"DMG": <int>, "HP": <int>}}.
+Use this example structure for you response me in JSON:
+{{
+  "card_name": "Card name here",
+  "ability_name": "Ability name here",
+  "ability_description": "Full ability description here.",
+  "stats": {{"DMG": 1234, "HP": 5678}},
+  "role": "Support",
+  "role_rating": "7.5/10 - Strong ability and competitive stats for a support role, but the attack reduction is not as impactful as other similar cards.",
+  "caps": "cap1, cap2" or null,
+  "revive": "description how/when it revives and the benefit" or null,
+  "status_effects": "effect1, effect2" or null,
+  "debuffs": "enemy debuffs (cancel, reduce, weaken)" or null,
+  "counters": "counter mechanics (block, dodge, reflect)" or null,
+  "buffs": "buffs to self/allies" or null,
+  "fusion": "fusion mode/conditions/effects" or null,
+  "summons": "summoned units, how, conditions" or null,
+  "support": boolean
+}}
+
+No markdown, no text outside the JSON, and no extra formatting or newlines at the top or bottom.
+Fields that do not apply must use null (not the string "null").
+The "stats" field must always be a JSON object with numbers, for example: {{"DMG": 0, "HP": 1200}}
 """
 
 def encode_image(path):
@@ -146,6 +164,10 @@ def analyze_card(path):
     result = {field: parsed.get(field) for field in ALL_FIELDS}
     if not isinstance(result.get("stats"), dict):
         result["stats"] = {"DMG": 0, "HP": 0}
+    # Si tiene stats (no todos son 0 o alguno es distinto de 0), support siempre None
+    stats = result.get("stats", {})
+    if isinstance(stats, dict) and ((stats.get("DMG", 0) != 0) or (stats.get("HP", 0) != 0)):
+        result["support"] = None
     return result
 
 
@@ -203,9 +225,9 @@ def process_folder(folder_path):
                     continue
         try:
             card_data = analyze_card(full_path)
-
             # Comprobar carta en supabase
             icon_name = card_data["card_name"].lower().replace(" ","_")
+            print("\n", card_data["card_name"])
             # Verifica si la imagen del archivo tiene el mismo nombre que icon_name
             ext = os.path.splitext(fname)[1].lower()
             expected_fname = f"{icon_name}{ext}"

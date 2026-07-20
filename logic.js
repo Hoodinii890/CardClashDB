@@ -39,7 +39,8 @@ async function searchCards() {
   const container = document.getElementById("results");
   container.innerHTML = `<p class="status-msg">Searching cards...</p>`;
 
-  let url = `${SUPABASE_URL}/rest/v1/Cards?select=*&order=id.asc`;
+  // Cambia el orden: ahora es por card_name ascendente
+  let url = `${SUPABASE_URL}/rest/v1/Cards?select=*&order=card_name.asc`;
 
   for (const [inputId, column] of Object.entries(FIELD_MAP)) {
     const value = document.getElementById(inputId).value.trim();
@@ -61,19 +62,19 @@ async function searchCards() {
           url += `&${column}=ilike.*${encodeURIComponent(value)}*`;
           break;
       }
-    }else{
-      if(column == "support"){
-          // Valida el estado del botón (clase .prompt-active = activo)
-          const supportBtn = document.getElementById('supportedCardToggle');
-          const supportActive = supportBtn && supportBtn.classList.contains('prompt-active');
-          if (supportActive) {
-            // Si el toggle está activo ("Support"), busca donde "support" es nulo
-            url += `&${column}=not.is.null&${column}=neq.false`;
-          } else {
-            // Si no está activo ("Cards"), busca donde "support" es no nulo
-            url += `&or=(${column}.is.null,${column}.eq.false)`;
-          }
-          break;
+    } else {
+      if (column == "support") {
+        // Valida el estado del botón (clase .prompt-active = activo)
+        const supportBtn = document.getElementById('supportedCardToggle');
+        const supportActive = supportBtn && supportBtn.classList.contains('prompt-active');
+        if (supportActive) {
+          // Si el toggle está activo ("Support"), busca donde "support" es nulo
+          url += `&${column}=not.is.null&${column}=neq.false`;
+        } else {
+          // Si no está activo ("Cards"), busca donde "support" es no nulo
+          url += `&or=(${column}.is.null,${column}.eq.false)`;
+        }
+        break;
       }
     }
   }
@@ -227,11 +228,24 @@ function buildCard(card) {
   lowerRoleRow.style.alignItems = "center";
   
   // -- Main role badge (if present)
-  if (
-    card.role &&
-    card.role.trim() !== "" &&
-    card.role.trim().toLowerCase() !== "support"
-  ) {
+  if (isSupport) {
+    // Procesar los roles: split, quitar vacíos y trims
+    let roles = (card.role || "")
+      .split(/\s*\/\s*/)
+      .map(r => r.trim())
+      .filter(Boolean);
+
+    // Filtrar los roles que NO son exactamente "Support"
+    let displayRoles = roles.filter(r => r !== "Support");
+
+    // Si hay algún otro rol además de "Support" o nombres compuestos, mostrarlo
+    displayRoles.forEach(role => {
+      const roleSpan = document.createElement("span");
+      roleSpan.className = "role";
+      roleSpan.textContent = role;
+      lowerRoleRow.appendChild(roleSpan);
+    });
+  }else{
     const roleSpan = document.createElement("span");
     roleSpan.className = "role";
     roleSpan.textContent = card.role;
@@ -249,20 +263,22 @@ function buildCard(card) {
   }
 
   // -- Fusion badge (if present) -- unique color
-  if (card.fusion) {
+  if (card.fusion != null) {
     const fusionSpan = document.createElement("span");
-    fusionSpan.className = "fusion-badge";
-    fusionSpan.textContent = (typeof card.fusion === "string" && card.fusion.length < 16) ? `Fusion: ${card.fusion}` : "Fusion";
-    fusionSpan.style.display = "inline-block";
+    fusionSpan.className = "role";
+    fusionSpan.textContent = "Fusion";
     fusionSpan.style.background = "linear-gradient(90deg, #6d52ed 40%, #63dee7 100%)";
     fusionSpan.style.color = "#fff";
-    fusionSpan.style.padding = "0.15em 0.8em";
-    fusionSpan.style.fontWeight = "bold";
-    fusionSpan.style.fontSize = "0.96em";
-    fusionSpan.style.letterSpacing = "0.02em";
-    fusionSpan.style.borderRadius = "5px";
-    fusionSpan.style.boxShadow = "0 1px 3px 0 rgba(0,0,0,0.09)";
     lowerRoleRow.appendChild(fusionSpan);
+  }
+  if (card.summons != null) {
+    const summonsSpan = document.createElement("span");
+    summonsSpan.className = "role";
+    summonsSpan.textContent = "Summoner";
+    // Unique color palette for summon badge
+    summonsSpan.style.background = "linear-gradient(90deg, #f27a1a 35%, #ffda56 100%)";
+    summonsSpan.style.color = "#222";
+    lowerRoleRow.appendChild(summonsSpan);
   }
 
   if (lowerRoleRow.children.length === 0) {
@@ -324,6 +340,10 @@ function buildCard(card) {
   let statsRow;
   function renderStats() {
     if (statsRow) statsRow.remove();
+    // Si es support, NO mostrar stats ni el label
+    if (isSupport) {
+      return;
+    }
     if (card.stats && (card.stats.DMG !== undefined || card.stats.HP !== undefined)) {
       statsRow = document.createElement("div");
       statsRow.className = "stat-row-title";
