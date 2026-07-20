@@ -1,4 +1,8 @@
 *.json
 *.csv
-*.py
+getting.py
+cards/
+__pycache__/
+*.pyc
 *.txt
+.env
