@@ -166,8 +166,13 @@ def analyze_card(path):
         result["stats"] = {"DMG": 0, "HP": 0}
     # Si tiene stats (no todos son 0 o alguno es distinto de 0), support siempre None
     stats = result.get("stats", {})
-    if isinstance(stats, dict) and ((stats.get("DMG", 0) != 0) or (stats.get("HP", 0) != 0)):
-        result["support"] = None
+    if isinstance(stats, dict):
+        dmg = stats.get("DMG")
+        hp = stats.get("HP")
+        if (dmg == 0 or dmg is None) and (hp == 0 or hp is None):
+            result["support"] = True
+        else:
+            result["support"] = None
     return result
 
 
