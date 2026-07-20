@@ -169,7 +169,7 @@ def analyze_card(path):
     if isinstance(stats, dict):
         dmg = stats.get("DMG")
         hp = stats.get("HP")
-        if (dmg == 0 or dmg is None) and (hp == 0 or hp is None):
+        if (dmg == 0 or dmg is None) or (hp == 0 or hp is None):
             result["support"] = True
         else:
             result["support"] = None
