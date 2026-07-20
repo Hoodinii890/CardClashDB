@@ -56,65 +56,84 @@ Your task:
    - card_name: main title (top, bold font).
    - ability_name: highlighted ability name (below card name).
    - ability_description: full ability description text.
-   - stats: DMG and HP values shown on the card. Convert shorthand like
-     "4.82K" to 4820, "20.18K" to 20180. Keep plain numbers as-is.
+   - stats: DMG and HP values shown on the card. Convert shorthand like "4.82K" to 4820, "20.18K" to 20180. Keep plain numbers as-is.
 3. Analyze the ability and stats to infer:
-   - role: must be chosen from the following closed list:
-     ["DPS","Burst DPS","Sustained DPS","Tank","Bruiser","Healer","Self-Healer","Support","Self-Support","Buffer","Debuffer","Crowd Control","Summoner","Reviver","Hybrid","Disruptor","Defender","Reflector","Dodger","Nuker","AoE","Single Target Specialist (just put STS)","Control Mage","Utility"]
-     Multiple roles allowed if applicable.
-   - role_rating: strict "X/10 - reason". MUST weigh both ability
-     usefulness AND how stats compare to current max (DMG {MAX_DMG},
-     HP {MAX_HP}). If stats are far below max, rating must be **0/10**
-     even if the ability sounds strong. Example: a card that explodes
-     for 500% of its HP but only has HP=14 will deal 70 damage, which
-     is useless against enemies with HP {MAX_HP}, so it must be rated 0/10. You may use up to 1 decimal place for more detailed ratings if necessary.
-   - For support cards (support=true, no DMG/HP stats), the rating must
-     be based **only** on the real usefulness of their support ability
-     (healing, buffs, revive, debuff removal, etc.) in the context of
-     battle. Support cards exist to benefit the user's 4 active attack
-     cards, so their value must be judged strictly by how much they
-     enhance those allies. If their effect is negligible compared to
-     the meta, they must also be rated 0/10.
-   - caps: here, list the card's "cap" badges that appear near the bottom edge of the card, inside gray rounded containers; but do NOT format them as an array like ["",""], instead write them as a single string, lowercase, separated by commas—for example: "one per party, effect cap, revive limit". Use None if there are none.
-   - revive: how/when it revives and the benefit. None if none.
-   - status_effects: only list the keywords for each effect type the card applies to the enemy, for example: "burn", "freeze", "sleep", "bleed", "poison", "stun", etc. Do not explain reasons, conditions, or how they are applied—just mention the effect keywords. If the card applies more than one, write a list of the keywords. Use None if there are no effects.
-   - debuffs: enemy debuffs (cancel, reduce, weaken). None if none.
-   - counters: counter mechanics (block, dodge, reflect). None if none.
-   - buffs: buffs to self/allies. None if none.
-   - fusion: fusion mode/conditions/effects. None if none.
-   - summons: summoned units, how, conditions. None if none.
-   - support: This will only be true if the card has neither DMG nor HP; if it has DMG and HP, regardless of any other information, this must be null.
+   - support: This will only be true if the card has no damage (DMG) or health points (HP); if it has damage and health points, regardless of any other information, this value must be null.
+   - role: Analyze the card's ability and stats. You MUST provide multiple roles if applicable, separated by a comma and a space.
+     
+     CRITICAL RULES FOR 7B MODEL:
+     - If the text mentions "deal 75% DMG" or hitting multiple enemies/domains, you MUST add "AoE".
+     - If the text mentions "rewind DMG", "restore HP", or "healing", you MUST add "Healer".
+     - If a card has more than 2 roles from the list below, you MUST add "Hybrid".
+     
+     Choose ONLY from this list:
+     - "DPS": Main damage dealer or self-damage buffs.
+     - "Tank": Soaks up damage, high HP, or cancels enemy attacks.
+     - "Bruiser": Durable and deals good damage (scales with MAX HP).
+     - "Counter-attacker": Attacks immediately after dodging, blocking, or canceling an enemy move.
+     - "AoE": Attacks multiple enemies or creates passive damage zones/domains/rewinds.
+     - "Healer": Restores health, rewinds damage taken, or revives allies.
+     - "Support": Buffs allies or debuffs enemies without dealing direct damage.
+     - "Summoner": Calls independent units, tokens, or entities onto the field (e.g., summon Colossal Giants).
+     - "Hybrid": Combines multiple main roles (e.g., Tank + AoE + Counter-attacker).
 
-Strict rating scale:
-- 0/10 → useless in meta (stats too low or ability irrelevant).
-- 1–3/10 → niche but weak overall.
-- 4–6/10 → somewhat useful but below average.
-- 7–8/10 → strong ability and competitive stats or support effect.
-- 9–10/10 → meta-defining card, top tier.
+     Format example: "Tank, Counter-attacker, AoE, Healer, Hybrid"
+
+   - caps: List the gray badge text from the bottom of the card as a single lowercase string separated by commas (e.g., "one per party, effect cap"). Use null if there are none.
+   
+   - revive: Identify if the card brings anyone back or creates extra lives. Look for: "revive", "resurrect", "backup life", "keep stats as a backup", "return from death". Summarize the timing and benefit. Use null if there is no revive mechanic.
+   
+   - status_effects: List ONLY the effect keywords applied to enemies (e.g., "burn, freeze, sleep, bleed, poison, stun, brand"). Do not explain conditions. Use null if there are no effects.
+   
+   - debuffs: List mechanics that weaken enemies. Look for: "cancel action", "reduce stats", "weaken", "steal DMG/stats", "remove bonus stats". Use null if empty.
+   
+   - counters: List reactive actions when attacked. Look for: "block", "dodge", "reflect", "cancel attack", "counter attack", "strike back", "revert last damaging effect", "rewind DMG". Use null if empty.
+   
+   - buffs: List enhancements to self or allies. Look for: "gain % DMG", "gain a shield", "healing", "restore % max HP", "gain lost time". Use null if empty.
+   
+   - fusion: Extract fusion conditions or modes if the text explicitly states "enter fusion mode". Use null if empty.
+   
+   - summons: Extract entities or fields created. Look for: "summon [unit]", "create a domain", "create a zone". Briefly state what is called or created. Use null if empty.
+
+   CRITICAL COMPLIANCE FOR ALL FIELDS: You MUST read the full card text from first to last word. Do not skip secondary triggers or end-of-turn conditions.
+
+   - role_rating: Provide a strict "X/10 - reason" rating. Evaluate the overall UTILITY and competitive strength of the full card. You MUST analyze all text phases, stats (DMG and HP), and combined mechanical chains (e.g., defense that builds into AoE damage, shield-breaking that converts to healing, or fusion mode entry). 
+
+     CRITICAL: Do not grade based only on the first sentence. Complex multi-phase cards or hybrid units with massive secondary effects deserve a high competitive score. If stats or effects are completely useless in the meta, rate it 0/10.
+
+     Strict Rating Scale:
+     - 0/10: Useless in meta (extremely low stats, irrelevant effects, or pure self-harming skills).
+     - 1.0 - 3.0 / 10: Niche but weak overall.
+     - 4.0 - 6.0 / 10: Somewhat useful but below-average utility (e.g., a simple stat stick or blocker with no follow-up mechanics).
+     - 7.0 - 8.5 / 10: Strong utility and highly competitive hybrid cards (e.g., cards combining active shields, fusion, or reliable counter-AoE fields).
+     - 9.0 - 10 / 10: Meta-defining, top-tier utility with multi-phase mechanics that completely dominate the match.
+
+     For Support Cards (support=true, no DMG/HP stats): Base the rating strictly on how effectively their support utility (healing, buffs, revives, debuff removal) enhances the 4 active attackers in battle. If the effect is negligible vs the meta, rate it 0/10.
 
 Use this example structure for you response me in JSON:
 {{
-  "card_name": "Card name here",
-  "ability_name": "Ability name here",
-  "ability_description": "Full ability description here.",
-  "stats": {{"DMG": 1234, "HP": 5678}},
-  "role": "Support",
-  "role_rating": "7.5/10 - Strong ability and competitive stats for a support role, but the attack reduction is not as impactful as other similar cards.",
-  "caps": "cap1, cap2" or null,
-  "revive": "description how/when it revives and the benefit" or null,
-  "status_effects": "effect1, effect2" or null,
-  "debuffs": "enemy debuffs (cancel, reduce, weaken)" or null,
-  "counters": "counter mechanics (block, dodge, reflect)" or null,
-  "buffs": "buffs to self/allies" or null,
-  "fusion": "fusion mode/conditions/effects" or null,
-  "summons": "summoned units, how, conditions" or null,
-  "support": boolean
+  "card_name": "Example Title",
+  "ability_name": "Example Ability",
+  "ability_description": "Example description text.",
+  "stats": {{"DMG": 0, "HP": 0}},
+  "role": "Example, Rols",
+  "role_rating": "5.0/10 - Example reasoning.",
+  "caps": null,
+  "revive": null,
+  "status_effects": null,
+  "debuffs": null,
+  "counters": null,
+  "buffs": null,
+  "fusion": null,
+  "summons": null,
+  "support": null
 }}
 
 No markdown, no text outside the JSON, and no extra formatting or newlines at the top or bottom.
-Fields that do not apply must use null (not the string "null").
-The "stats" field must always be a JSON object with numbers, for example: {{"DMG": 0, "HP": 1200}}
+Fields that do not apply must use the JSON null value (not the string "null" or "None").
+The "stats" field must always be a JSON object with numbers, for example: {{"DMG": 0, "HP": 0}}
 """
+
 
 def encode_image(path):
     with open(path, "rb") as f:

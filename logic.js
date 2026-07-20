@@ -56,7 +56,30 @@ async function searchCards() {
           }
           break;
         case "role_rating":
-          url += `&${column}=ilike.${encodeURIComponent(value)}*`;
+          // value llega como 0, 1, ... 10
+          if (value === "0") {
+            // filtrar desde 0/10 hasta 0.9/10
+            url += `&or=(role_rating.ilike.0/10*,role_rating.ilike.0.1/10*,role_rating.ilike.0.2/10*,role_rating.ilike.0.3/10*,role_rating.ilike.0.4/10*,role_rating.ilike.0.5/10*,role_rating.ilike.0.6/10*,role_rating.ilike.0.7/10*,role_rating.ilike.0.8/10*,role_rating.ilike.0.9/10*)`;
+          } else if (value === "10") {
+            url += `&${column}=ilike.10/10*`;
+          } else if (!isNaN(Number(value)) && Number(value) >= 1 && Number(value) <= 19) {
+            // Si es número, filtra role_rating que empieza exactamente por el número seguido de "/10" o por ese número un punto decimal seguido de "/10"
+            // Ejemplo: 1 busca 1/10, 1.1/10, 1.2/10, ..., 1.9/10, 1.0/10 (solo para enteros)
+            if (value.includes(".")) {
+              // Si es decimal, busca p.ej. "1.5/10"
+              url += `&${column}=ilike.${encodeURIComponent(value)}/10*`;
+            } else {
+              // Si es entero, busca "1/10" exactamente y "1.0/10", "1.1/10", ..., "1.9/10"
+              const ors = [];
+              ors.push(`${column}.ilike.${encodeURIComponent(value)}/10*`);
+              for (let i = 0; i <= 9; ++i) {
+                ors.push(`${column}.ilike.${encodeURIComponent(value)}.${i}/10*`);
+              }
+              url += `&or=(${ors.join(",")})`;
+            }
+          } else {
+            url += `&${column}=ilike.*${encodeURIComponent(value)}*`;
+          }
           break;
         default:
           url += `&${column}=ilike.*${encodeURIComponent(value)}*`;
@@ -268,6 +291,14 @@ function buildCard(card) {
     fusionSpan.className = "role";
     fusionSpan.textContent = "Fusion";
     fusionSpan.style.background = "linear-gradient(90deg, #6d52ed 40%, #63dee7 100%)";
+    fusionSpan.style.color = "#fff";
+    lowerRoleRow.appendChild(fusionSpan);
+  }
+  if (card.revive != null) {
+    const fusionSpan = document.createElement("span");
+    fusionSpan.className = "role";
+    fusionSpan.textContent = "Revive";
+    fusionSpan.style.background = "linear-gradient(90deg, #3791b5 20%, #19b15c 80%)";
     fusionSpan.style.color = "#fff";
     lowerRoleRow.appendChild(fusionSpan);
   }
